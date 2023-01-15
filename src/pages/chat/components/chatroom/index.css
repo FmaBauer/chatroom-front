@@ -18,3 +18,18 @@
   font-weight: 600;
   font-size: 18px;
 }
+.chatroom-content {
+  padding: 30px;
+}
+.message-wrapper {
+  display: flex;
+  margin-top: 20px;
+}
+.message-title {
+  font-size: 12px;
+}
+.message-content {
+  background: #454451;
+  padding: 15px;
+  border-radius: 0px 8px 8px 8px;
+}
