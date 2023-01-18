@@ -3,7 +3,7 @@ import request from '../../../lib/request'
 
 const initialState = {
   rooms: [],
-  current_room_id: 1
+  currentRoomId: 1
 }
 
 export const chatroomsSlice = createSlice({

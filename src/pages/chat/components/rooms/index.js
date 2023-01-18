@@ -2,13 +2,25 @@ import './index.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { getChatrooms } from '../../store/chatrooms'
+import { useQuery, gql } from '@apollo/client'
+
+const GET_CHATROOMS = gql`
+  query getChatrooms {
+    chatrooms {
+      title
+      members {
+        full_name
+        short_name
+      }
+    }
+  }
+`
 
 function Rooms() {
-  const chatrooms = useSelector((state) => state.chatrooms.rooms)
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(getChatrooms())
-  }, [])
+  const { loading, error, data } = useQuery(GET_CHATROOMS)
+  if (loading) {
+    return <>loading...</>
+  }
   return (
     <div className="rooms">
       <div className="rooms-search">
@@ -16,7 +28,7 @@ function Rooms() {
       </div>
       <div className="rooms-list">
         {
-          chatrooms.map(room => {
+          data.chatrooms.map(room => {
             return (
               <div className="room-item">
                 <div className="room-avator">
@@ -24,7 +36,7 @@ function Rooms() {
                 </div>
                 <div className="room-desc">
                   <div className="room-name">
-                    {room.name}
+                    {room.title}
                     <div className="room-latest-time">{room.last_message_time}</div>
                   </div>
                   <div className="room-message">{room.last_message}</div>
