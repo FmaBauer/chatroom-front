@@ -86,6 +86,7 @@ function Chatroom(props) {
   const setThisMetion = () => {
     let input = msg.slice(msg.indexOf('@')+1)
     setMsg(msg.replace(input, metion.short_name))
+    setMetion({})
   }
   return (
     <div className="chatroom">
@@ -103,7 +104,7 @@ function Chatroom(props) {
                 <div className="message-avator"><img src={message.sender.avator_url} /></div>
                 <div className="message-content-wrapper">
                   <div className="message-title">
-                    <span>{message.sender.full_name}</span><span>{(dayjs(message.send_time-0)).format('HH:mm')}</span>
+                    <span>{message.sender.full_name}</span> <span>{(dayjs(message.send_time-0)).format('HH:mm')}</span>
                   </div>
                   <div className="message-content">
                     {message.content}

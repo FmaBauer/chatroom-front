@@ -8,7 +8,9 @@ function Rooms(props) {
   const { loading, error, data } = useQuery(GET_CHATROOMS)
   const { roomId, setRoomId } = props
   useEffect(() => {
-    setRoomId(data.chatrooms && data.chatrooms.length && data.chatrooms[0]._id)
+    if (!loading && !error) {
+      setRoomId(data.chatrooms && data.chatrooms[0]._id)
+    }
   }, [loading])
   if (loading) {
     return <>loading...</>
