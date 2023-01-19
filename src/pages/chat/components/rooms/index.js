@@ -1,20 +1,6 @@
 import './index.css'
-import { useSelector, useDispatch } from 'react-redux'
-import { useEffect } from 'react'
-import { getChatrooms } from '../../store/chatrooms'
-import { useQuery, gql } from '@apollo/client'
-
-const GET_CHATROOMS = gql`
-  query getChatrooms {
-    chatrooms {
-      title
-      members {
-        full_name
-        short_name
-      }
-    }
-  }
-`
+import { useQuery } from '@apollo/client'
+import { GET_CHATROOMS } from '../../../../lib/graphql'
 
 function Rooms() {
   const { loading, error, data } = useQuery(GET_CHATROOMS)
