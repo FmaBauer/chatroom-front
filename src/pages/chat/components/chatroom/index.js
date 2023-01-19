@@ -7,7 +7,7 @@ import { apolloClient } from '../../../../index'
 import { GET_MESSAGES, GET_CHATROOMS } from '../../../../lib/graphql'
 import quoteIcon from '../../../../images/quote.png'
 
-const currentRoomId = '63c69d5d72c2f53743ad68ff'  // 暂时hardcode，TODO:根据房间切换从本地状态层获取
+// const currentRoomId = '63c69d5d72c2f53743ad68ff'  // 暂时hardcode，TODO:根据房间切换从本地状态层获取
 
 const socket = io("ws://localhost:4000")
 socket.on('chat message', function(msg) {
@@ -17,7 +17,7 @@ socket.on('chat message', function(msg) {
 
 function updateNewMsg(msg) {
   const data = apolloClient.readQuery({
-    query: GET_MESSAGES, variables: { chatroomId: currentRoomId }
+    query: GET_MESSAGES, variables: { chatroomId: msg.roomId }
   })
   const myNewMsg = {
     content: msg.msg,
@@ -32,31 +32,35 @@ function updateNewMsg(msg) {
     data: {
       messages: [...data.messages, myNewMsg],
     },
-    variables: { chatroomId: currentRoomId },
+    variables: { chatroomId: msg.roomId },
   })
 }
 
-function Chatroom() {
+function Chatroom(props) {
+  const { roomId } = props
   const [ msg, setMsg ] = useState('')
   const [ metion, setMetion ] = useState(false)
   const [ quoteMsg, setQuoteMsg ] = useState({})
   const userId = '63c69c5172c2f53743ad68f9'
   const { loading, error, data } = useQuery(GET_MESSAGES, {
-    variables: { chatroomId: currentRoomId },
+    variables: { chatroomId: roomId },
   })
   const { loading: chatroomLoading, data: roomData } = useQuery(GET_CHATROOMS)
   if (loading || chatroomLoading) {
     return <>loading...</>
   }
-  let thisRoom = roomData.chatrooms.filter(room => room._id === currentRoomId)[0]
+  if (error) {
+    return <>error encoutered...</>
+  }
+  let thisRoom = roomData.chatrooms.filter(room => room._id === roomId)[0]
   const onMsgKeyDown = (e) => {
     if (e.keyCode === 13) {
-      let message = { msg, userId, roomId: currentRoomId }
+      let message = { msg, userId, roomId: roomId }
       if (quoteMsg._id) {
         message.quoteMsgId = quoteMsg._id
       }
       socket.emit('chat message', message)
-      updateNewMsg({ msg, userId, roomId: currentRoomId })
+      updateNewMsg({ msg, userId, roomId: roomId })
       setMsg('')
       setQuoteMsg({})
     }
