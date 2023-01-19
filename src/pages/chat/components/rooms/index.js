@@ -27,7 +27,7 @@ function Rooms(props) {
         {
           data.chatrooms.map(room => {
             return (
-              <div className={'room-item' + (room._id === roomId ? ' current' : '')}
+              <div key={room._id} className={'room-item' + (room._id === roomId ? ' current' : '')}
                 onClick={() => setRoomId(room._id)}>
                 <div className="room-avator">
                   <img src="https://cdn3.iconfinder.com/data/icons/avatars-9/145/Avatar_Cat-1024.png" />

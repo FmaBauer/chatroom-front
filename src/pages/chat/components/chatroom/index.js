@@ -7,8 +7,6 @@ import { apolloClient } from '../../../../index'
 import { GET_MESSAGES, GET_CHATROOMS } from '../../../../lib/graphql'
 import quoteIcon from '../../../../images/quote.png'
 
-// const currentRoomId = '63c69d5d72c2f53743ad68ff'  // 暂时hardcode，TODO:根据房间切换从本地状态层获取
-
 const socket = io("ws://localhost:4000")
 socket.on('chat message', function(msg) {
   console.log('message received', msg)
@@ -100,7 +98,7 @@ function Chatroom(props) {
             let self = message.sender._id === userId
             let extraClass = self ? 'self' : ''
             return (
-              <div className={`message-wrapper ${extraClass}`}>
+              <div key={message._id} className={`message-wrapper ${extraClass}`}>
                 <div className="message-avator"><img src={message.sender.avator_url} /></div>
                 <div className="message-content-wrapper">
                   <div className="message-title">
