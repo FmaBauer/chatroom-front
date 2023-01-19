@@ -6,5 +6,7 @@
 ## 数据库结构如下
 
 message: _id, sender_id, content, send_time, chatroom_id
+
 chatroom: _id, title, members Array
+
 user: _id, short_name, full_name, intro, avator_url
