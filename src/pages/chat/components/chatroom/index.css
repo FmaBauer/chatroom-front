@@ -21,6 +21,8 @@
 }
 .chatroom-content {
   padding: 30px;
+  height: calc(100vh - 320px);
+  overflow: scroll;
 }
 .message-wrapper {
   display: flex;
@@ -29,9 +31,22 @@
 .message-wrapper.self {
   flex-direction: row-reverse;
 }
+.message-wrapper.self .message-content {
+  background-color: #04B17D;
+  color: #0C0E13;
+}
 .message-avator {
   width: 40px;
-  background-color: aqua;
+  margin: 0 5px;
+}
+.message-avator img {
+  width: 40px;
+  border-radius: 100%;
+}
+.message-content-wrapper {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
 }
 .message-title {
   font-size: 12px;
@@ -39,7 +54,16 @@
 .message-content {
   background: #454451;
   padding: 15px;
+  width: auto;
   border-radius: 0px 8px 8px 8px;
+  position: relative;
+  max-width: 600px;
+}
+.message-quote {
+  background: #35343E;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 5px;
 }
 .chatroom-input {
   position: absolute;
@@ -54,9 +78,28 @@
   background: none;
   border: none;
   outline: none;
-  height: 60px;
+  height: 40px;
   width: 100%;
 }
 .chatroom-input textarea:focus {
   border: none;
+}
+.message-toolkit {
+  position: absolute;
+  right: -50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+.quotemsg {
+  width: 500px;
+  padding: 5px 10px;
+  background: #35343E;
+  border-radius: 8px;
+}
+.metion-tip {
+  background: #35343E;
+  border-radius: 6px;
+  padding: 10px;
+  width: 200px;
 }

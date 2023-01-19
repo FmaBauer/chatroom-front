@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { io } from 'socket.io-client'
 import { apolloClient } from '../../../../index'
 import { GET_MESSAGES, GET_CHATROOMS } from '../../../../lib/graphql'
+import quoteIcon from '../../../../images/quote.png'
 
 const currentRoomId = '63c69d5d72c2f53743ad68ff'  // 暂时hardcode，TODO:根据房间切换从本地状态层获取
 
@@ -37,6 +38,8 @@ function updateNewMsg(msg) {
 
 function Chatroom() {
   const [ msg, setMsg ] = useState('')
+  const [ metion, setMetion ] = useState(false)
+  const [ quoteMsg, setQuoteMsg ] = useState({})
   const userId = '63c69c5172c2f53743ad68f9'
   const { loading, error, data } = useQuery(GET_MESSAGES, {
     variables: { chatroomId: currentRoomId },
@@ -48,12 +51,37 @@ function Chatroom() {
   let thisRoom = roomData.chatrooms.filter(room => room._id === currentRoomId)[0]
   const onMsgKeyDown = (e) => {
     if (e.keyCode === 13) {
-      socket.emit('chat message', { msg, userId, roomId: currentRoomId })
+      let message = { msg, userId, roomId: currentRoomId }
+      if (quoteMsg._id) {
+        message.quoteMsgId = quoteMsg._id
+      }
+      socket.emit('chat message', message)
       updateNewMsg({ msg, userId, roomId: currentRoomId })
+      setMsg('')
+      setQuoteMsg({})
     }
   }
   const onMsgChange = (e) => {
-    setMsg(e.target.value)
+    let value = e.target.value
+    setMsg(value)
+    if (value.indexOf('@') >= 0) {
+      let input = value.slice(value.indexOf('@')+1)
+      let targets = thisRoom.members.filter(
+        m => m.short_name.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      )
+      if (targets.length > 0) {
+        setMetion(targets[0])
+      }
+    } else {
+      setMetion({})
+    }
+  }
+  const quote = (msg) => {
+    setQuoteMsg(msg)
+  }
+  const setThisMetion = () => {
+    let input = msg.slice(msg.indexOf('@')+1)
+    setMsg(msg.replace(input, metion.short_name))
   }
   return (
     <div className="chatroom">
@@ -64,17 +92,24 @@ function Chatroom() {
       <div className="chatroom-content">
         {
           data.messages.map(message => {
-            let extraClass = message.sender._id === userId ? 'self' : ''
+            let self = message.sender._id === userId
+            let extraClass = self ? 'self' : ''
             return (
               <div className={`message-wrapper ${extraClass}`}>
-                <div className="message-avator"></div>
+                <div className="message-avator"><img src={message.sender.avator_url} /></div>
                 <div className="message-content-wrapper">
                   <div className="message-title">
                     <span>{message.sender.full_name}</span><span>{(dayjs(message.send_time-0)).format('HH:mm')}</span>
                   </div>
                   <div className="message-content">
                     {message.content}
+                    {self ? null : <div className="message-toolkit" onClick={()=>quote(message)}>
+                      <span><img src={quoteIcon} /></span>
+                    </div>}
                   </div>
+                  {message.quote_message && message.quote_message._id ? <div className="message-quote">
+                    {message.quote_message.content.slice(0, 80)+'...'}
+                  </div> : null}
                 </div>
               </div>
             )
@@ -82,7 +117,16 @@ function Chatroom() {
         }
       </div>
       <div className="chatroom-input">
-        <textarea onChange={onMsgChange} onKeyDown={onMsgKeyDown} />
+        <div className={'metion-tip' + (metion._id ? '' : ' hidden')}
+          onClick={setThisMetion}>
+          {metion.full_name}
+        </div>
+        <textarea value={msg} onChange={onMsgChange} onKeyDown={onMsgKeyDown} />
+        {
+          quoteMsg._id
+          ? <div className='quotemsg'>{`${quoteMsg.content.slice(0, 60)}...`}</div>
+          : null
+        }
       </div>
     </div>
   )
